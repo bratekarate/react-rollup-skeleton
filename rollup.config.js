@@ -12,7 +12,7 @@ const fp = require('find-free-port');
 //const extensions = [".js", ".jsx", ".ts", ".tsx"];
 const input = "src/index.tsx";
 
-const dev = process.env.ROLLUP_WATCH === 'true';
+const watch = process.env.ROLLUP_WATCH === 'true';
 
 const plugins = [
   typescript({
@@ -30,7 +30,7 @@ const plugins = [
       fs.copyFile(path.resolve("./src/index.html"), path.resolve("./dist/index.html"), err => console.error(err));
     }
   },
-  dev && {
+  watch && {
     buildStart: async () => {
       const server = http.createServer((request, response) => {
         return handler(request, response, { public: 'dist' });
