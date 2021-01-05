@@ -14,6 +14,20 @@ const input = "src/index.tsx";
 
 const watch = process.env.ROLLUP_WATCH === 'true';
 
+const servePlugin = {
+  buildStart: async () => {
+    const server = http.createServer((request, response) => {
+      return handler(request, response, {public: 'dist'});
+    })
+
+    const ports = await fp(8080);
+
+    server.listen({port: ports[0]}, () => {
+      console.log(`Running at http://localhost:${ports[0]}`);
+    });
+  }
+}
+
 const plugins = [
   typescript({
     typescript: require("typescript"),
@@ -30,34 +44,39 @@ const plugins = [
       fs.copyFile(path.resolve("./src/index.html"), path.resolve("./dist/index.html"), err => console.error(err));
     }
   },
-  watch && {
-    buildStart: async () => {
-      const server = http.createServer((request, response) => {
-        return handler(request, response, { public: 'dist' });
-      })
-
-      const ports = await fp(8080);
-
-      server.listen({ port: ports[0]}, () => {
-        console.log(`Running at http://localhost:${ports[0]}`);
-      });
-    }
-  },
 ];
 
 const external = [
   //...Object.keys(pkg.dependencies),
 ];
 
-export default [
-  {
-    input,
-    output: {
-      file: pkg.main,
-      format: "esm",
-      sourcemap: true,
-    },
-    external,
-    plugins,
-  },
-];
+export default commandLineArgs => {
+  if (commandLineArgs.test === true) {
+    plugins.push({
+      buildStart: async () => {
+        console.log('prepare tests');
+      }
+    });
+    plugins.push({
+      buildEnd: async () => {
+        console.log('run tests');
+      }
+    });
+  }
+  if (commandLineArgs.test === true ||
+    commandLineArgs.serve === true) {
+    plugins.push(servePlugin);    
+  }
+  return [
+      {
+        input,
+        output: {
+          file: pkg.main,
+          format: "esm",
+          sourcemap: true,
+        },
+        external,
+        plugins,
+      },
+    ]
+  }
