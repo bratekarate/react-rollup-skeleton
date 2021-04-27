@@ -6,24 +6,16 @@
     "declarationDir": "dist/types",
     "experimentalDecorators": true,
     "jsx": "react",
-    "lib": [
-      "dom",
-      "es2017"
-    ],
+    "lib": ["dom", "es2017"],
     "moduleResolution": "node",
     "module": "esnext",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noImplicitThis": true,
     "resolveJsonModule": true,
     "rootDir": "src",
     "target": "es2017",
-    "typeRoots": [
-      "node_modules/@types",
-      "custom_typings/"
-    ]
+    "typeRoots": ["node_modules/@types", "custom_typings/"]
   },
-  "include": [
-    "src/**/*",
-    "test/**/*"
-  ]
+  "include": ["src/**/*", "test/**/*"]
 }
